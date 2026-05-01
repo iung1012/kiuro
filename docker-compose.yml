@@ -30,4 +30,19 @@ services:
       - ${APP_RUNTIME_BIND:-./data}:/runtime
       - ${APP_EXT_TARGETS_BIND:-./_ext_targets}:/_ext_targets
       - ${APP_EXTERNAL_LOGS_BIND:-./external_logs}:/app/services/external_logs
+      - ${KIRO_GATEWAY_CREDS_BIND:-./kiro-gateway-creds}:/runtime/kiro-gateway-creds
     shm_size: "1gb"
+
+  kiro-gateway:
+    image: jwadow/kiro-gateway:latest
+    container_name: kiro-gateway
+    restart: unless-stopped
+    environment:
+      PROXY_API_KEY: ${KIRO_GATEWAY_API_KEY:-changeme}
+      KIRO_CREDS_FILE: /creds/credentials.json
+      HOST: 0.0.0.0
+      PORT: "8080"
+    ports:
+      - "${KIRO_GATEWAY_PORT_BIND:-8080}:8080"
+    volumes:
+      - ${KIRO_GATEWAY_CREDS_BIND:-./kiro-gateway-creds}:/creds

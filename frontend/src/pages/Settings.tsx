@@ -360,17 +360,34 @@ const TAB_ITEMS = [
     sections: [
       {
         title: 'Kiro Account Manager',
-        desc: '注册成功后自动写入 kiro-account-manager 的 accounts.json',
+        desc: 'Após registro, escreve automaticamente no accounts.json do kiro-account-manager',
         fields: [
           {
             key: 'kiro_manager_path',
-            label: 'accounts.json 路径（可选）',
-            placeholder: '留空则自动使用系统默认路径',
+            label: 'Caminho do accounts.json (opcional)',
+            placeholder: 'Deixe vazio para usar o caminho padrão do sistema',
           },
           {
             key: 'kiro_manager_exe',
-            label: 'Kiro Manager 可执行文件（可选）',
-            placeholder: '未安装 Rust 时可填写已安装的 KiroAccountManager.exe',
+            label: 'Executável do Kiro Manager (opcional)',
+            placeholder: 'KiroAccountManager.exe se instalado sem Rust',
+          },
+        ],
+      },
+      {
+        title: 'kiro-gateway',
+        desc: 'Após registro, exporta credenciais para o kiro-gateway (proxy API compatível com OpenAI/Anthropic)',
+        fields: [
+          {
+            key: 'kiro_gateway_creds_dir',
+            label: 'Diretório de credenciais (opcional)',
+            placeholder: '/runtime/kiro-gateway-creds',
+          },
+          {
+            key: 'kiro_gateway_api_key',
+            label: 'PROXY_API_KEY (sua senha para o gateway)',
+            secret: true,
+            placeholder: 'Defina uma senha segura',
           },
         ],
       },
@@ -1059,7 +1076,7 @@ function IntegrationsPanel() {
                   loading={busy === 'backfill-grok'}
                   onClick={() => backfill(['grok'], 'Grok', 'backfill-grok')}
                 >
-                  回填现有 Grok 账号
+                  Exportar contas Grok
                 </Button>
               ) : null}
               {item.name === 'kiro-manager' ? (
@@ -1067,7 +1084,15 @@ function IntegrationsPanel() {
                   loading={busy === 'backfill-kiro'}
                   onClick={() => backfill(['kiro'], 'Kiro', 'backfill-kiro')}
                 >
-                  回填现有 Kiro 账号
+                  Exportar contas Kiro
+                </Button>
+              ) : null}
+              {item.name === 'kiro-gateway' ? (
+                <Button
+                  loading={busy === 'backfill-kiro-gateway'}
+                  onClick={() => backfill(['kiro'], 'kiro-gateway', 'backfill-kiro-gateway')}
+                >
+                  Exportar contas para kiro-gateway
                 </Button>
               ) : null}
             </Space>

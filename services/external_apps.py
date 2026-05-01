@@ -24,6 +24,7 @@ _REMOTE_URLS = {
     "cliproxyapi": "https://github.com/router-for-me/CLIProxyAPI.git",
     "grok2api": "https://github.com/chenyme/grok2api.git",
     "kiro-manager": "https://github.com/hj01857655/kiro-account-manager.git",
+    "kiro-gateway": "https://github.com/jwadow/kiro-gateway.git",
 }
 
 _KIRO_MANAGER_MSI_URL = (
@@ -59,6 +60,15 @@ _SERVICE_META = {
         "url": "",
         "health": "",
         "kind": "desktop",
+    },
+    "kiro-gateway": {
+        "label": "kiro-gateway",
+        "repo_name": "kiro-gateway",
+        "url": "http://127.0.0.1:8080",
+        "health": "http://127.0.0.1:8080/health",
+        "management_url": "",
+        "port": 8080,
+        "kind": "web",
     },
 }
 
@@ -766,6 +776,92 @@ def _ensure_grok2api_runtime_config(repo: Path):
     config_file.write_text("\n".join(updated_lines) + "\n", encoding="utf-8")
 
 
+def _ensure_kiro_gateway_venv(repo: Path) -> str:
+    uv = _uv_exe()
+    marker = repo / ".kiro-gateway-env-ready"
+    venv_python = _venv_python(repo)
+
+    if uv and (not marker.exists() or not venv_python.exists()):
+        subprocess.run(
+            [uv, "venv", "--python", "3.11"],
+            cwd=str(repo),
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=_creationflags(),
+        )
+        pip = str(venv_python).replace("python", "pip") if os.name != "nt" else str(venv_python.parent / "pip.exe")
+        subprocess.run(
+            [str(venv_python), "-m", "pip", "install", "-r", "requirements.txt", "-q"],
+            cwd=str(repo),
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=_creationflags(),
+        )
+        marker.write_text("uv", encoding="utf-8")
+        return str(venv_python)
+
+    if venv_python.exists():
+        return str(venv_python)
+
+    python_exe = shutil.which("python3") or shutil.which("python") or sys.executable
+    if not marker.exists():
+        subprocess.run(
+            [python_exe, "-m", "venv", ".venv"],
+            cwd=str(repo),
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=_creationflags(),
+        )
+        new_python = _venv_python(repo)
+        subprocess.run(
+            [str(new_python), "-m", "pip", "install", "-r", "requirements.txt", "-q"],
+            cwd=str(repo),
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=_creationflags(),
+        )
+        marker.write_text("venv", encoding="utf-8")
+        return str(new_python)
+
+    return str(venv_python) if venv_python.exists() else python_exe
+
+
+def _write_kiro_gateway_env(repo: Path):
+    env_path = repo / ".env"
+    api_key = _get_setting("kiro_gateway_api_key", "changeme")
+    creds_dir = _get_setting("kiro_gateway_creds_dir", "").strip()
+    if not creds_dir:
+        runtime_dir = os.environ.get("APP_RUNTIME_DIR", "")
+        creds_dir = str(Path(runtime_dir) / "kiro-gateway-creds") if runtime_dir else "/creds"
+
+    lines: dict[str, str] = {}
+    if env_path.exists():
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            if "=" in line and not line.startswith("#"):
+                k, v = line.split("=", 1)
+                lines[k.strip()] = v.strip()
+
+    lines["PROXY_API_KEY"] = api_key
+    lines["KIRO_CREDS_FILE"] = str(Path(creds_dir) / "credentials.json")
+    lines["HOST"] = lines.get("HOST", "0.0.0.0")
+    lines["PORT"] = lines.get("PORT", "8080")
+
+    env_path.write_text(
+        "\n".join(f"{k}={v}" for k, v in lines.items()) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _build_kiro_gateway_command(repo: Path) -> list[str]:
+    _write_kiro_gateway_env(repo)
+    python_exe = _ensure_kiro_gateway_venv(repo)
+    return [python_exe, "main.py"]
+
+
 def _build_command(name: str) -> tuple[list[str], Path]:
     repo = _repo_path(name)
     if name == "cliproxyapi":
@@ -825,6 +921,9 @@ def _build_command(name: str) -> tuple[list[str], Path]:
         if not cargo:
             raise RuntimeError("未找到 Kiro Account Manager 可执行文件，且系统未安装 Rust/Cargo，无法从源码启动")
         return ["npm", "run", "tauri", "dev"], repo
+
+    if name == "kiro-gateway":
+        return _build_kiro_gateway_command(repo), repo
 
     raise KeyError(name)
 

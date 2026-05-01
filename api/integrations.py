@@ -142,11 +142,16 @@ def backfill_integrations(body: BackfillRequest):
                 elif row.platform == "kiro":
                     from core.config_store import config_store
                     from platforms.kiro.account_manager_upload import upload_to_kiro_manager
+                    from platforms.kiro.kiro_gateway_upload import upload_to_kiro_gateway
 
                     account = _to_account(row)
                     configured_path = str(config_store.get("kiro_manager_path", "") or "").strip() or None
                     ok, msg = upload_to_kiro_manager(account, path=configured_path)
                     results.append({"name": "Kiro Manager", "ok": ok, "msg": msg})
+
+                    gw_creds_dir = str(config_store.get("kiro_gateway_creds_dir", "") or "").strip() or None
+                    gw_ok, gw_msg = upload_to_kiro_gateway(account, creds_dir=gw_creds_dir)
+                    results.append({"name": "kiro-gateway", "ok": gw_ok, "msg": gw_msg})
 
                 if not results:
                     item["results"].append({"name": "skip", "ok": False, "msg": "未配置对应导入目标"})
