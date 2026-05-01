@@ -733,6 +733,7 @@ async def stream_logs(task_id: str, since: int = 0):
     async def event_generator():
         sent = since
         use_memory = _task_store.exists(task_id)
+        last_ping = asyncio.get_event_loop().time()
         while True:
             if use_memory:
                 logs, status = _task_store.log_state(task_id)
@@ -754,9 +755,12 @@ async def stream_logs(task_id: str, since: int = 0):
                 yield f"data: {json.dumps({'done': True, 'status': status, **counters})}\n\n"
                 break
             if not use_memory:
-                # 非内存任务仅提供持久化快照，不进入无限轮询
                 yield f"data: {json.dumps({'done': True, 'status': 'stopped', **counters})}\n\n"
                 break
+            now = asyncio.get_event_loop().time()
+            if now - last_ping >= 15:
+                yield ": ping\n\n"
+                last_ping = now
             await asyncio.sleep(0.5)
 
     return StreamingResponse(
@@ -765,6 +769,7 @@ async def stream_logs(task_id: str, since: int = 0):
         headers={
             "Cache-Control": "no-cache",
             "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
         },
     )
 

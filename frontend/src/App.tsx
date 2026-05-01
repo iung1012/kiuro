@@ -104,17 +104,17 @@ function AppContent() {
     {
       key: '/',
       icon: <DashboardOutlined />,
-      label: '仪表盘',
+      label: 'Painel',
     },
     {
       key: '/running-tasks',
       icon: <PlayCircleOutlined />,
-      label: '任务运行',
+      label: 'Tarefas em Execução',
     },
     {
       key: '/accounts',
       icon: <UserOutlined />,
-      label: '平台管理',
+      label: 'Plataformas',
       children: [
         ...platforms.map(p => ({
           key: `/accounts/${p.key}`,
@@ -125,17 +125,17 @@ function AppContent() {
     {
       key: '/history',
       icon: <HistoryOutlined />,
-      label: '任务历史',
+      label: 'Histórico de Tarefas',
     },
     {
       key: '/proxies',
       icon: <GlobalOutlined />,
-      label: '代理管理',
+      label: 'Gerenciar Proxies',
     },
     {
       key: '/settings',
       icon: <SettingOutlined />,
-      label: '全局配置',
+      label: 'Configurações',
     },
   ]
 
@@ -209,7 +209,7 @@ function AppContent() {
                 justifyContent: collapsed ? 'center' : 'space-between',
               }}
             >
-              {!collapsed && (isLight ? '亮色模式' : '暗色模式')}
+              {!collapsed && (isLight ? 'Modo Claro' : 'Modo Escuro')}
             </Button>
             {hasPassword && (
               <Button
@@ -223,7 +223,7 @@ function AppContent() {
                   justifyContent: collapsed ? 'center' : 'space-between',
                 }}
               >
-                {!collapsed && '退出登录'}
+                {!collapsed && 'Sair'}
               </Button>
             )}
           </div>

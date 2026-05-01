@@ -59,9 +59,9 @@ export default function TaskHistory() {
       body: JSON.stringify({ ids: selectedRowKeys }),
     }) as TaskLogBatchDeleteResponse
 
-    message.success(`已删除 ${result.deleted} 条任务历史`)
+    message.success(`${result.deleted} registros de histórico excluídos`)
     if (result.not_found.length > 0) {
-      message.warning(`${result.not_found.length} 条记录不存在或已被删除`)
+      message.warning(`${result.not_found.length} registros não encontrados ou já excluídos`)
     }
     setSelectedRowKeys([])
     await load()
@@ -69,38 +69,38 @@ export default function TaskHistory() {
 
   const columns: TableColumnsType<TaskLogItem> = [
     {
-      title: '时间',
+      title: 'Horário',
       dataIndex: 'created_at',
       key: 'created_at',
       width: 180,
-      render: (text: string) => (text ? new Date(text).toLocaleString('zh-CN') : '-'),
+      render: (text: string) => (text ? new Date(text).toLocaleString('pt-BR') : '-'),
     },
     {
-      title: '平台',
+      title: 'Plataforma',
       dataIndex: 'platform',
       key: 'platform',
       width: 100,
       render: (text: string) => <Tag>{text}</Tag>,
     },
     {
-      title: '邮箱',
+      title: 'E-mail',
       dataIndex: 'email',
       key: 'email',
       render: (text: string) => <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{text}</span>,
     },
     {
-      title: '状态',
+      title: 'Status',
       dataIndex: 'status',
       key: 'status',
       width: 80,
       render: (status: string) => (
         <Tag color={status === 'success' ? 'success' : 'error'}>
-          {status === 'success' ? '成功' : '失败'}
+          {status === 'success' ? 'Sucesso' : 'Falhou'}
         </Tag>
       ),
     },
     {
-      title: '错误信息',
+      title: 'Mensagem de erro',
       dataIndex: 'error',
       key: 'error',
       render: (text: string) => text || '-',
@@ -111,22 +111,22 @@ export default function TaskHistory() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>任务历史</h1>
-          <p style={{ color: '#7a8ba3', marginTop: 4 }}>注册任务执行记录</p>
+          <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>Histórico de Tarefas</h1>
+          <p style={{ color: '#7a8ba3', marginTop: 4 }}>Registros de execução de tarefas de registro</p>
         </div>
         <Space>
-          <Text type="secondary">{total} 条记录</Text>
-          {selectedRowKeys.length > 0 && <Text type="success">已选 {selectedRowKeys.length} 条</Text>}
+          <Text type="secondary">{total} registros</Text>
+          {selectedRowKeys.length > 0 && <Text type="success">Selecionados: {selectedRowKeys.length}</Text>}
           {selectedRowKeys.length > 0 && (
             <Popconfirm
-              title={`确认删除选中的 ${selectedRowKeys.length} 条任务历史？`}
+              title={`Confirmar exclusão dos ${selectedRowKeys.length} registros selecionados?`}
               onConfirm={handleBatchDelete}
-              okText="删除"
-              cancelText="取消"
+              okText="Excluir"
+              cancelText="Cancelar"
               okButtonProps={{ danger: true }}
             >
               <Button danger icon={<DeleteOutlined />}>
-                删除 {selectedRowKeys.length} 条
+                Excluir {selectedRowKeys.length} registros
               </Button>
             </Popconfirm>
           )}
@@ -138,7 +138,7 @@ export default function TaskHistory() {
             }}
             style={{ width: 120 }}
             options={[
-              { value: '', label: '全部平台' },
+              { value: '', label: 'Todas as plataformas' },
               { value: 'chatgpt', label: 'ChatGPT' },
               { value: 'cursor', label: 'Cursor' },
             ]}

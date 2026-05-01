@@ -42,25 +42,25 @@ export default function Dashboard() {
 
   const statCards = [
     {
-      title: '总账号数',
+      title: 'Total de Contas',
       value: stats?.total ?? 0,
       icon: <UserOutlined style={{ fontSize: 32 }} />,
       color: '#6366f1',
     },
     {
-      title: '试用中',
+      title: 'Em Trial',
       value: stats?.by_status?.trial ?? 0,
       icon: <ClockCircleOutlined style={{ fontSize: 32 }} />,
       color: '#f59e0b',
     },
     {
-      title: '已订阅',
+      title: 'Assinantes',
       value: stats?.by_status?.subscribed ?? 0,
       icon: <CheckCircleOutlined style={{ fontSize: 32 }} />,
       color: '#10b981',
     },
     {
-      title: '已失效',
+      title: 'Inválidas',
       value: (stats?.by_status?.expired ?? 0) + (stats?.by_status?.invalid ?? 0),
       icon: <CloseCircleOutlined style={{ fontSize: 32 }} />,
       color: '#ef4444',
@@ -71,11 +71,11 @@ export default function Dashboard() {
     <div style={{ padding: 0 }}>
       <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>仪表盘</h1>
-          <p style={{ color: '#7a8ba3', marginTop: 4 }}>账号总览</p>
+          <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>Painel</h1>
+          <p style={{ color: '#7a8ba3', marginTop: 4 }}>Visão geral das contas</p>
         </div>
         <Button icon={<ReloadOutlined spin={loading} />} onClick={load} loading={loading}>
-          刷新
+          Atualizar
         </Button>
       </div>
 
@@ -94,7 +94,7 @@ export default function Dashboard() {
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={12}>
-          <Card title="平台分布">
+          <Card title="Distribuição por Plataforma">
             {loading ? (
               <div style={{ textAlign: 'center', padding: 40 }}>
                 <Spin />
@@ -114,13 +114,13 @@ export default function Dashboard() {
                 </div>
               ))
             ) : (
-              <div style={{ textAlign: 'center', color: '#7a8ba3' }}>加载中...</div>
+              <div style={{ textAlign: 'center', color: '#7a8ba3' }}>Carregando...</div>
             )}
           </Card>
         </Col>
 
         <Col xs={24} lg={12}>
-          <Card title="状态分布">
+          <Card title="Distribuição por Status">
             {loading ? (
               <div style={{ textAlign: 'center', padding: 40 }}>
                 <Spin />
@@ -142,7 +142,7 @@ export default function Dashboard() {
                 </div>
               ))
             ) : (
-              <div style={{ textAlign: 'center', color: '#7a8ba3' }}>加载中...</div>
+              <div style={{ textAlign: 'center', color: '#7a8ba3' }}>Carregando...</div>
             )}
           </Card>
         </Col>

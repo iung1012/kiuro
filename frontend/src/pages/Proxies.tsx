@@ -48,23 +48,23 @@ export default function Proxies() {
           body: JSON.stringify({ url: lines[0], region }),
         })
       }
-      message.success('添加成功')
+      message.success('Adicionado com sucesso')
       setNewProxy('')
       setRegion('')
       load()
     } catch (e: any) {
-      message.error(`添加失败: ${e.message}`)
+      message.error(`Falha ao adicionar: ${e.message}`)
     }
   }
 
   const del = async (id: number) => {
     try {
       await apiFetch(`/proxies/${id}`, { method: 'DELETE' })
-      message.success('删除成功')
+      message.success('Excluído com sucesso')
       setSelectedRowKeys((prev) => prev.filter((key) => key !== id))
       load()
     } catch (e: any) {
-      message.error(`删除失败: ${e.message || '未知错误'}`)
+      message.error(`Falha ao excluir: ${e.message || 'Erro desconhecido'}`)
     }
   }
 
@@ -81,13 +81,13 @@ export default function Proxies() {
 
       const notFound = (result.not_found || []) as number[]
       Modal.success({
-        title: '批量删除结果',
-        okText: '知道了',
+        title: 'Resultado da exclusão em lote',
+        okText: 'Ok',
         content: (
           <div>
-            <div>请求删除：{result.total_requested ?? ids.length} 条</div>
-            <div>成功删除：{result.deleted ?? 0} 条</div>
-            <div>未找到：{notFound.length} 条</div>
+            <div>Solicitados para excluir: {result.total_requested ?? ids.length}</div>
+            <div>Excluídos com sucesso: {result.deleted ?? 0}</div>
+            <div>Não encontrados: {notFound.length}</div>
             {notFound.length > 0 && (
               <div style={{ marginTop: 8, maxHeight: 120, overflow: 'auto', fontFamily: 'monospace' }}>
                 {notFound.join(', ')}
@@ -97,7 +97,7 @@ export default function Proxies() {
         ),
       })
     } catch (e: any) {
-      message.error(`批量删除失败: ${e.message || '未知错误'}`)
+      message.error(`Falha na exclusão em lote: ${e.message || 'Erro desconhecido'}`)
     }
   }
 
@@ -117,19 +117,19 @@ export default function Proxies() {
 
   const columns: any[] = [
     {
-      title: '代理地址',
+      title: 'Endereço do Proxy',
       dataIndex: 'url',
       key: 'url',
       render: (text: string) => <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{text}</span>,
     },
     {
-      title: '地区',
+      title: 'Região',
       dataIndex: 'region',
       key: 'region',
       render: (text: string) => text || '-',
     },
     {
-      title: '成功/失败',
+      title: 'Sucesso/Falha',
       key: 'stats',
       render: (_: any, record: any) => (
         <Space>
@@ -140,17 +140,17 @@ export default function Proxies() {
       ),
     },
     {
-      title: '状态',
+      title: 'Status',
       dataIndex: 'is_active',
       key: 'is_active',
       render: (active: boolean) => (
         <Tag color={active ? 'success' : 'error'} icon={active ? <CheckCircleOutlined /> : <CloseCircleOutlined />}>
-          {active ? '活跃' : '禁用'}
+          {active ? 'Ativo' : 'Desativado'}
         </Tag>
       ),
     },
     {
-      title: '操作',
+      title: 'Ações',
       key: 'action',
       render: (_: any, record: any) => (
         <Space>
@@ -161,10 +161,10 @@ export default function Proxies() {
             onClick={() => toggle(record.id)}
           />
           <Popconfirm
-            title="确认删除该代理吗？"
+            title="Confirmar exclusão deste proxy?"
             onConfirm={() => del(record.id)}
-            okText="删除"
-            cancelText="取消"
+            okText="Excluir"
+            cancelText="Cancelar"
             okButtonProps={{ danger: true }}
           >
             <Button type="text" size="small" danger icon={<DeleteOutlined />} />
@@ -178,15 +178,15 @@ export default function Proxies() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>代理管理</h1>
-          <p style={{ color: '#7a8ba3', marginTop: 4 }}>共 {proxies.length} 个代理</p>
+          <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>Gerenciar Proxies</h1>
+          <p style={{ color: '#7a8ba3', marginTop: 4 }}>Total de {proxies.length} proxies</p>
         </div>
         <Button icon={<ReloadOutlined spin={checking} />} onClick={check} loading={checking}>
-          检测全部
+          Verificar todos
         </Button>
       </div>
 
-      <Card title="添加代理（每行一个）">
+      <Card title="Adicionar proxy (um por linha)">
         <Space direction="vertical" style={{ width: '100%' }}>
           <Input.TextArea
             value={newProxy}
@@ -199,11 +199,11 @@ export default function Proxies() {
             <Input
               value={region}
               onChange={(e) => setRegion(e.target.value)}
-              placeholder="地区标签 (如 US, SG)"
+              placeholder="Rótulo de região (ex: US, SG)"
               style={{ width: 200 }}
             />
             <Button type="primary" icon={<PlusOutlined />} onClick={add}>
-              添加
+              Adicionar
             </Button>
           </Space>
         </Space>
@@ -212,18 +212,18 @@ export default function Proxies() {
       <Card>
         <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'space-between' }}>
           <div style={{ color: '#7a8ba3' }}>
-            已选中 {selectedRowKeys.length} 条
+            Selecionados: {selectedRowKeys.length}
           </div>
           <Popconfirm
-            title={`确认删除选中的 ${selectedRowKeys.length} 条代理？`}
+            title={`Confirmar exclusão dos ${selectedRowKeys.length} proxies selecionados?`}
             onConfirm={batchDel}
-            okText="删除"
-            cancelText="取消"
+            okText="Excluir"
+            cancelText="Cancelar"
             okButtonProps={{ danger: true }}
             disabled={selectedRowKeys.length === 0}
           >
             <Button danger icon={<DeleteOutlined />} disabled={selectedRowKeys.length === 0}>
-              批量删除
+              Excluir em lote
             </Button>
           </Popconfirm>
         </div>

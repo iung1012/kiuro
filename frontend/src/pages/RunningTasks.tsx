@@ -51,17 +51,17 @@ const PLATFORM_LABELS: Record<string, string> = {
 }
 
 const SOURCE_LABELS: Record<string, string> = {
-  manual: '手动',
+  manual: 'Manual',
   api: 'API',
-  schedule: '调度',
+  schedule: 'Agendado',
 }
 
 const STATUS_CONFIG: Record<string, { color: string; label: string; icon?: React.ReactNode }> = {
-  pending: { color: 'default', label: '等待中', icon: <LoadingOutlined /> },
-  running: { color: 'processing', label: '运行中', icon: <LoadingOutlined /> },
-  done: { color: 'success', label: '已完成' },
-  failed: { color: 'error', label: '失败' },
-  stopped: { color: 'warning', label: '已停止' },
+  pending: { color: 'default', label: 'Aguardando', icon: <LoadingOutlined /> },
+  running: { color: 'processing', label: 'Executando', icon: <LoadingOutlined /> },
+  done: { color: 'success', label: 'Concluído' },
+  failed: { color: 'error', label: 'Falhou' },
+  stopped: { color: 'warning', label: 'Parado' },
 }
 
 function toUnixSeconds(value: unknown): number | null {
@@ -78,7 +78,7 @@ function toUnixSeconds(value: unknown): number | null {
     return null
   }
   if (typeof value !== 'number' || !Number.isFinite(value)) return null
-  // 兼容毫秒时间戳
+  // compatível com timestamp em milissegundos
   return value > 1_000_000_000_000 ? value / 1000 : value
 }
 
@@ -143,9 +143,9 @@ export default function RunningTasks() {
       await apiFetch(`/tasks/${taskId}`, { method: 'DELETE' })
       if (logTaskId === taskId) setLogTaskId(null)
       setTasks((prev) => prev.filter((t) => t.id !== taskId))
-      message.success('任务已删除')
+      message.success('Tarefa excluída')
     } catch (error) {
-      const detail = error instanceof Error ? error.message : '删除失败'
+      const detail = error instanceof Error ? error.message : 'Falha ao excluir'
       message.error(detail)
     }
   }
@@ -221,16 +221,16 @@ export default function RunningTasks() {
               />
               <Space size={8}>
                 <Text style={{ fontSize: 11, color: '#10b981' }}>
-                  ✓ 成功 {success}
+                  ✓ Sucesso {success}
                 </Text>
                 {failed > 0 && (
                   <Text style={{ fontSize: 11, color: '#dc2626' }}>
-                    ✗ 失败 {failed}
+                    ✗ Falhou {failed}
                   </Text>
                 )}
                 {skipped > 0 && (
                   <Text style={{ fontSize: 11, color: '#d97706' }}>
-                    → 跳过 {skipped}
+                    → Ignorados {skipped}
                   </Text>
                 )}
               </Space>
@@ -245,18 +245,18 @@ export default function RunningTasks() {
                 icon={<FileTextOutlined />}
                 onClick={() => setLogTaskId(task.id)}
               >
-                查看日志
+                Ver Log
               </Button>
               {!isActive(task) && (
                 <Popconfirm
-                  title="确认删除该任务记录？"
-                  okText="删除"
-                  cancelText="取消"
+                  title="Confirmar exclusão do registro desta tarefa?"
+                  okText="Excluir"
+                  cancelText="Cancelar"
                   okButtonProps={{ danger: true }}
                   onConfirm={() => handleDelete(task.id)}
                 >
                   <Button size="small" danger icon={<DeleteOutlined />}>
-                    删除
+                    Excluir
                   </Button>
                 </Popconfirm>
               )}
@@ -278,10 +278,10 @@ export default function RunningTasks() {
         }}
       >
         <Title level={4} style={{ margin: 0 }}>
-          任务运行
+          Tarefas em Execução
         </Title>
         <Button icon={<ReloadOutlined />} loading={loading} onClick={load}>
-          刷新
+          Atualizar
         </Button>
       </div>
 
@@ -292,7 +292,7 @@ export default function RunningTasks() {
             strong
             style={{ display: 'block', marginBottom: 8, fontSize: 13, color: '#6366f1' }}
           >
-            进行中 ({activeTasks.length})
+            Em andamento ({activeTasks.length})
           </Text>
           {activeTasks.map(renderTask)}
         </div>
@@ -305,14 +305,14 @@ export default function RunningTasks() {
             strong
             style={{ display: 'block', marginBottom: 8, fontSize: 13, color: '#6b7280' }}
           >
-            已完成 ({finishedTasks.length})
+            Concluídas ({finishedTasks.length})
           </Text>
           {finishedTasks.map(renderTask)}
         </div>
       )}
 
       {tasks.length === 0 && !loading && (
-        <Empty description="暂无任务记录" style={{ marginTop: 60 }} />
+        <Empty description="Nenhum registro de tarefa" style={{ marginTop: 60 }} />
       )}
 
       {/* Log drawer */}
@@ -320,7 +320,7 @@ export default function RunningTasks() {
         title={
           <Space>
             <FileTextOutlined />
-            <span>任务日志</span>
+            <span>Log da Tarefa</span>
             {logTaskId && (
               <Text code style={{ fontSize: 11 }}>
                 {logTaskId}

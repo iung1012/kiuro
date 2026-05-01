@@ -135,30 +135,30 @@ function buildDisplayProviders(providers: MailImportProviderDescriptor[]) {
         type: 'outlook',
         apiType: 'microsoft',
         label: 'Outlook',
-        description: '导入 Outlook 本地号池，支持 mixed 导入（OAuth / MailAPI URL）；运行时按账号类型自动选择 Graph/IMAP 或 MailAPI URL 轮询取码。',
-        helper_text: '支持自动识别：邮箱----密码----client_id----refresh_token 或 邮箱----mailapi_url；当前视图仅展示 @outlook 的 OAuth 账号。',
+        description: 'Importar pool de contas Outlook local, com suporte a importação mista (OAuth / MailAPI URL); em tempo de execução, seleciona automaticamente Graph/IMAP ou MailAPI URL conforme o tipo de conta.',
+        helper_text: 'Reconhecimento automático: email----senha----client_id----refresh_token ou email----mailapi_url; a visão atual exibe apenas contas OAuth @outlook.',
         content_placeholder: 'example@outlook.com----password----client_id----refresh_token',
-        preview_empty_text: '当前还没有可预览的 Outlook 已导入账号。',
+        preview_empty_text: 'Ainda não há contas Outlook importadas para pré-visualização.',
       },
       {
         ...provider,
         type: 'hotmail',
         apiType: 'microsoft',
         label: 'Hotmail',
-        description: '导入 Hotmail 本地号池，支持 mixed 导入（OAuth / MailAPI URL）；运行时按账号类型自动选择 Graph/IMAP 或 MailAPI URL 轮询取码。',
-        helper_text: '支持自动识别：邮箱----密码----client_id----refresh_token 或 邮箱----mailapi_url；当前视图仅展示 @hotmail 的 OAuth 账号。',
+        description: 'Importar pool de contas Hotmail local, com suporte a importação mista (OAuth / MailAPI URL); em tempo de execução, seleciona automaticamente Graph/IMAP ou MailAPI URL conforme o tipo de conta.',
+        helper_text: 'Reconhecimento automático: email----senha----client_id----refresh_token ou email----mailapi_url; a visão atual exibe apenas contas OAuth @hotmail.',
         content_placeholder: 'example@hotmail.com----password----client_id----refresh_token',
-        preview_empty_text: '当前还没有可预览的 Hotmail 已导入账号。',
+        preview_empty_text: 'Ainda não há contas Hotmail importadas para pré-visualização.',
       },
       {
         ...provider,
         type: 'mailapi',
         apiType: 'microsoft',
         label: 'MailAPI URL',
-        description: '导入 MailAPI URL 账号池（邮箱----mailapi_url），运行时通过 URL 轮询网页内容提取验证码。',
-        helper_text: '支持 mixed 导入。当前视图仅展示 account_type=mailapi_url 的账号。',
+        description: 'Importar pool de contas MailAPI URL (email----mailapi_url), consultando o conteúdo da página via URL em tempo de execução para extrair o código de verificação.',
+        helper_text: 'Suporta importação mista. A visão atual exibe apenas contas account_type=mailapi_url.',
         content_placeholder: 'example@hotmail.com----https://mailapi.icu/key?type=html&orderNo=xxxxxxxx',
-        preview_empty_text: '当前还没有可预览的 MailAPI URL 已导入账号。',
+        preview_empty_text: 'Ainda não há contas MailAPI URL importadas para pré-visualização.',
       },
     )
   }
@@ -195,17 +195,17 @@ function filterSnapshotBySelection(
 
 function buildImportSuccessMessage(result: MailImportResult) {
   if (result.type === 'applemail') {
-    const fileLabel = result.snapshot.filename ? `，已绑定 ${result.snapshot.filename}` : ''
-    return `导入成功，共 ${result.summary.success} 个邮箱${fileLabel}`
+    const fileLabel = result.snapshot.filename ? `, arquivo vinculado: ${result.snapshot.filename}` : ''
+    return `Importação concluída, total de ${result.summary.success} e-mails${fileLabel}`
   }
-  return `导入完成：成功 ${result.summary.success} / 失败 ${result.summary.failed}`
+  return `Importação concluída: sucesso ${result.summary.success} / falha ${result.summary.failed}`
 }
 
 function buildResultMessage(result: MailImportResult) {
   if (result.type === 'applemail') {
-    return `导入完成：成功 ${result.summary.success} / 失败 ${result.summary.failed}`
+    return `Importação concluída: sucesso ${result.summary.success} / falha ${result.summary.failed}`
   }
-  return `导入完成：成功 ${result.summary.success} / 失败 ${result.summary.failed}`
+  return `Importação concluída: sucesso ${result.summary.success} / falha ${result.summary.failed}`
 }
 
 export default function MailImportPanel({ form }: MailImportPanelProps) {
@@ -276,7 +276,7 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
         setSelectedType(displayProviders[0].type)
       }
     } catch (error) {
-      const detail = error instanceof Error ? error.message : '加载邮箱导入配置失败'
+      const detail = error instanceof Error ? error.message : 'Falha ao carregar configuração de importação de e-mail'
       message.error(detail)
     } finally {
       setLoadingProviders(false)
@@ -327,7 +327,7 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
   const handleImport = async () => {
     const payload = content.trim()
     if (!payload) {
-      message.error('请输入导入内容')
+      message.error('Por favor insira o conteúdo para importar')
       return
     }
 
@@ -376,7 +376,7 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
 
       message.success(buildImportSuccessMessage(response))
     } catch (error) {
-      const detail = error instanceof Error ? error.message : '邮箱导入失败'
+      const detail = error instanceof Error ? error.message : 'Falha na importação de e-mail'
       message.error(detail)
     } finally {
       setImporting(false)
@@ -417,9 +417,9 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
       setResult(response)
       setRawSnapshot(response.snapshot)
       setSelectedRowKeys([])
-      message.success(`已删除 ${email}`)
+      message.success(`${email} excluído`)
     } catch (error) {
-      const detail = error instanceof Error ? error.message : '删除失败'
+      const detail = error instanceof Error ? error.message : 'Falha ao excluir'
       message.error(detail)
     } finally {
       setDeletingEmail('')
@@ -428,13 +428,13 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
 
   const handleBatchDelete = async () => {
     if (!selectedRowKeys.length) {
-      message.warning('请先勾选要删除的邮箱')
+      message.warning('Por favor selecione os e-mails para excluir')
       return
     }
 
     const selectedItems = tableData.filter((item) => selectedRowKeys.includes(item.key))
     if (!selectedItems.length) {
-      message.warning('未找到要删除的邮箱')
+      message.warning('E-mails para excluir não encontrados')
       return
     }
 
@@ -462,9 +462,9 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
       setResult(response)
       setRawSnapshot(response.snapshot)
       setSelectedRowKeys([])
-      message.success(`批量删除完成：成功 ${response.summary.success} / 失败 ${response.summary.failed}`)
+      message.success(`Exclusão em lote concluída: sucesso ${response.summary.success} / falha ${response.summary.failed}`)
     } catch (error) {
-      const detail = error instanceof Error ? error.message : '批量删除失败'
+      const detail = error instanceof Error ? error.message : 'Falha na exclusão em lote'
       const shouldFallbackToSingleDelete = /405|404|Method Not Allowed|Not Found/i.test(detail)
 
       if (!shouldFallbackToSingleDelete) {
@@ -499,20 +499,20 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
           success += 1
         } catch (singleError) {
           failed += 1
-          errors.push(singleError instanceof Error ? singleError.message : `删除失败: ${item.email}`)
+          errors.push(singleError instanceof Error ? singleError.message : `Falha ao excluir: ${item.email}`)
         }
       }
 
       setSelectedRowKeys([])
       if (errors.length) {
-        message.warning(`批量删除已回退单条删除：成功 ${success} / 失败 ${failed}`)
+        message.warning(`Exclusão em lote revertida para exclusão individual: sucesso ${success} / falha ${failed}`)
         setResult((prev) => prev ? {
           ...prev,
           errors,
           summary: { total: success + failed, success, failed },
         } : prev)
       } else {
-        message.success(`批量删除已回退单条删除：成功 ${success} / 失败 ${failed}`)
+        message.success(`Exclusão em lote revertida para exclusão individual: sucesso ${success} / falha ${failed}`)
       }
     } finally {
       setBatchDeleting(false)
@@ -528,7 +528,7 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
         width: 72,
       },
       {
-        title: '邮箱',
+        title: 'E-mail',
         dataIndex: 'email',
         key: 'email',
       },
@@ -536,7 +536,7 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
 
     if (selectedType === 'applemail') {
       baseColumns.push({
-        title: '邮箱文件夹',
+        title: 'Pasta de e-mail',
         dataIndex: 'mailbox',
         key: 'mailbox',
         width: 140,
@@ -545,7 +545,7 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
     } else {
       baseColumns.push(
         {
-          title: '类型',
+          title: 'Tipo',
           dataIndex: 'account_type',
           key: 'account_type',
           width: 120,
@@ -555,36 +555,36 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
           },
         } as never,
         {
-          title: '状态',
+          title: 'Status',
           dataIndex: 'enabled',
           key: 'enabled',
           width: 100,
           render: (value: boolean | null | undefined) => (
-            <Tag color={value ? 'green' : 'default'}>{value ? '启用' : '停用'}</Tag>
+            <Tag color={value ? 'green' : 'default'}>{value ? 'Ativo' : 'Inativo'}</Tag>
           ),
         } as never,
         {
-          title: '认证',
+          title: 'Autenticação',
           dataIndex: 'has_oauth',
           key: 'has_oauth',
           width: 100,
           render: (value: boolean | null | undefined) => (
-            <Tag color={value ? 'blue' : 'default'}>{value ? 'OAuth' : '密码'}</Tag>
+            <Tag color={value ? 'blue' : 'default'}>{value ? 'OAuth' : 'Senha'}</Tag>
           ),
         } as never,
       )
     }
 
     baseColumns.push({
-      title: '操作',
+      title: 'Ações',
       key: 'action',
       width: 90,
       render: (_: unknown, item: MailImportSnapshotItem) => (
         <Popconfirm
-          title="确认删除这个邮箱吗？"
+          title="Confirmar exclusão deste e-mail?"
           description={item.email}
-          okText="删除"
-          cancelText="取消"
+          okText="Excluir"
+          cancelText="Cancelar"
           okButtonProps={{ danger: true, loading: deletingEmail === item.email }}
           onConfirm={() => void handleDelete(item)}
         >
@@ -595,7 +595,7 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
             loading={deletingEmail === item.email}
             style={{ paddingInline: 0 }}
           >
-            删除
+            Excluir
           </Button>
         </Popconfirm>
       ),
@@ -606,7 +606,7 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
 
   return (
     <Card
-      title="邮箱导入"
+      title="Importação de E-mail"
       extra={(
         <Select
           value={selectedType}
@@ -623,14 +623,14 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
     >
       <Space direction="vertical" style={{ width: '100%' }} size={12}>
         <Typography.Text type="secondary">
-          {selectedProvider?.description || '通过统一导入接口，将内容导入到对应邮箱账号池。'}
+          {selectedProvider?.description || 'Importe conteúdo para o pool de contas de e-mail correspondente através da interface de importação unificada.'}
         </Typography.Text>
         {selectedProvider?.helper_text ? (
           <Typography.Text type="secondary">{selectedProvider.helper_text}</Typography.Text>
         ) : null}
 
         {selectedProvider?.supports_filename ? (
-          <Form.Item label={selectedProvider.filename_label || '文件名'} style={{ marginBottom: 0 }}>
+          <Form.Item label={selectedProvider.filename_label || 'Nome do arquivo'} style={{ marginBottom: 0 }}>
             <Input
               value={filename}
               onChange={(event) => setFilename(event.target.value)}
@@ -651,23 +651,23 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
             }}
           >
             <Space align="center">
-              <Typography.Text strong>邮箱裂变（别名）</Typography.Text>
+              <Typography.Text strong>Fragmentação de e-mail (alias)</Typography.Text>
               <Switch checked={aliasSplitEnabled} onChange={setAliasSplitEnabled} />
               <Typography.Text type="secondary">
-                默认关闭；开启后每个原邮箱生成随机 6 位英文别名
+                Desativado por padrão; quando ativado, gera alias aleatório de 6 letras para cada e-mail original
               </Typography.Text>
             </Space>
             {aliasSplitEnabled ? (
               <Space align="center" wrap>
-                <Typography.Text>每个原邮箱裂变数量</Typography.Text>
+                <Typography.Text>Quantidade de fragmentos por e-mail original</Typography.Text>
                 <InputNumber
                   min={1}
                   max={5}
                   value={aliasSplitCount}
                   onChange={(value) => setAliasSplitCount(Math.max(1, Math.min(5, Number(value || 5))))}
                 />
-                <Typography.Text type="secondary">（1~5）</Typography.Text>
-                <Typography.Text style={{ marginLeft: 16 }}>包含原邮箱</Typography.Text>
+                <Typography.Text type="secondary">(1~5)</Typography.Text>
+                <Typography.Text style={{ marginLeft: 16 }}>Incluir e-mail original</Typography.Text>
                 <Switch checked={aliasIncludeOriginal} onChange={setAliasIncludeOriginal} />
               </Space>
             ) : null}
@@ -691,14 +691,14 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
               setResult(null)
             }}
           >
-            清空
+            Limpar
           </Button>
           <Space>
             <Button onClick={() => void loadSnapshot(selectedType)} loading={loadingSnapshot}>
-              刷新预览
+              Atualizar pré-visualização
             </Button>
             <Button type="primary" onClick={handleImport} loading={importing}>
-              确认导入
+              Confirmar importação
             </Button>
           </Space>
         </Space>
@@ -717,23 +717,23 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <Tag color="blue">
             {selectedType === 'applemail'
-              ? `已导入: ${snapshot?.count || 0} 个邮箱`
-              : `当前预览匹配: ${snapshot?.items.length || 0}${rawSnapshot?.truncated ? ` / 总池 ${rawSnapshot?.count || 0}` : ''}`}
+              ? `Importados: ${snapshot?.count || 0} e-mails`
+              : `Pré-visualização atual: ${snapshot?.items.length || 0}${rawSnapshot?.truncated ? ` / Pool total ${rawSnapshot?.count || 0}` : ''}`}
           </Tag>
           {selectedType === 'applemail' && snapshot?.filename ? (
-            <Typography.Text type="secondary">当前文件: {snapshot.filename}</Typography.Text>
+            <Typography.Text type="secondary">Arquivo atual: {snapshot.filename}</Typography.Text>
           ) : null}
           {snapshot?.items?.length ? (
             <Popconfirm
-              title={`确认删除已勾选的 ${selectedRowKeys.length} 个邮箱吗？`}
-              okText="批量删除"
-              cancelText="取消"
+              title={`Confirmar exclusão dos ${selectedRowKeys.length} e-mails selecionados?`}
+              okText="Excluir em lote"
+              cancelText="Cancelar"
               okButtonProps={{ danger: true, loading: batchDeleting }}
               onConfirm={() => void handleBatchDelete()}
               disabled={!selectedRowKeys.length}
             >
               <Button danger disabled={!selectedRowKeys.length} loading={batchDeleting}>
-                批量删除
+                Excluir em lote
               </Button>
             </Popconfirm>
           ) : null}
@@ -763,13 +763,13 @@ export default function MailImportPanel({ form }: MailImportPanelProps) {
             }}
           >
             <Typography.Text type="secondary">
-              {selectedProvider?.preview_empty_text || '当前还没有可预览的导入内容。'}
+              {selectedProvider?.preview_empty_text || 'Ainda não há conteúdo importado para pré-visualização.'}
             </Typography.Text>
           </div>
         )}
 
         {snapshot?.truncated ? (
-          <Typography.Text type="secondary">预览只展示前 100 条记录，完整内容以实际存储为准。</Typography.Text>
+          <Typography.Text type="secondary">A pré-visualização exibe apenas os primeiros 100 registros; o conteúdo completo é baseado no armazenamento real.</Typography.Text>
         ) : null}
       </Space>
     </Card>

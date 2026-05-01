@@ -25,8 +25,8 @@ export function ChatGPTRegistrationModeSwitch({
       <Space align="center" wrap>
         <Switch
           checked={hasRefreshTokenSolution}
-          checkedChildren="有 RT"
-          unCheckedChildren="无 RT"
+          checkedChildren="Com RT"
+          unCheckedChildren="Sem RT"
           onChange={(checked) =>
             onChange(
               checked
@@ -36,13 +36,13 @@ export function ChatGPTRegistrationModeSwitch({
           }
         />
         <Tag color={hasRefreshTokenSolution ? 'success' : 'default'}>
-          {hasRefreshTokenSolution ? '默认推荐' : '兼容旧方案'}
+          {hasRefreshTokenSolution ? 'Recomendado' : 'Modo legado'}
         </Tag>
       </Space>
       <Text type="secondary">
         {hasRefreshTokenSolution
-          ? '有 RT 方案会走新 PR 链路，产出 Access Token + Refresh Token。'
-          : '无 RT 方案会走当前旧链路，只产出 Access Token / Session，依赖 RT 的能力可能不可用。'}
+          ? 'O modo Com RT usa o novo fluxo PR, gerando Access Token + Refresh Token.'
+          : 'O modo Sem RT usa o fluxo legado atual, gerando apenas Access Token / Session; recursos que dependem de RT podem não estar disponíveis.'}
       </Text>
     </Space>
   )

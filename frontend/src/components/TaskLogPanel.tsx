@@ -55,9 +55,9 @@ export function TaskLogPanel({ taskId, onDone }: TaskLogPanelProps) {
   const handleCopyAll = async () => {
     try {
       await navigator.clipboard.writeText(lines.join('\n'))
-      message.success('日志已复制')
+      message.success('Log copiado')
     } catch {
-      message.error('复制失败')
+      message.error('Falha ao copiar')
     }
   }
 
@@ -71,11 +71,11 @@ export function TaskLogPanel({ taskId, onDone }: TaskLogPanelProps) {
       const targeted = Number(response.control?.targeted_skip_attempts || 0)
       message.success(
         targeted > 1
-          ? `已发送跳过 ${targeted} 个进行中账号请求`
-          : '已发送跳过当前账号请求',
+          ? `Solicitação de ignorar ${targeted} contas em andamento enviada`
+          : 'Solicitação de ignorar conta atual enviada',
       )
     } catch (error_: unknown) {
-      const detail = error_ instanceof Error ? error_.message : '请求失败'
+      const detail = error_ instanceof Error ? error_.message : 'Falha na solicitação'
       message.error(detail)
     } finally {
       setSkipLoading(false)
@@ -88,9 +88,9 @@ export function TaskLogPanel({ taskId, onDone }: TaskLogPanelProps) {
     try {
       await apiFetch(`/tasks/${taskId}/stop`, { method: 'POST' })
       setStopRequested(true)
-      message.success('已发送停止任务请求，正在停止进行中的线程')
+      message.success('Solicitação de parada enviada, encerrando threads em andamento')
     } catch (error_: unknown) {
-      const detail = error_ instanceof Error ? error_.message : '请求失败'
+      const detail = error_ instanceof Error ? error_.message : 'Falha na solicitação'
       message.error(detail)
     } finally {
       setStopLoading(false)
@@ -148,7 +148,7 @@ export function TaskLogPanel({ taskId, onDone }: TaskLogPanelProps) {
         }
       } catch (error_: unknown) {
         if (!cancelled) {
-          const detail = error_ instanceof Error ? error_.message : '获取任务快照失败'
+          const detail = error_ instanceof Error ? error_.message : 'Falha ao obter snapshot da tarefa'
           setError(detail)
         }
       }
@@ -168,12 +168,12 @@ export function TaskLogPanel({ taskId, onDone }: TaskLogPanelProps) {
         })
 
         if (!response.ok) {
-          setError(`日志流连接失败 (${response.status})`)
+          setError(`Falha na conexão do stream de log (${response.status})`)
           return true
         }
 
         if (!response.body) {
-          setError('日志流未返回可读数据')
+          setError('Stream de log não retornou dados legíveis')
           return false
         }
 
@@ -244,7 +244,7 @@ export function TaskLogPanel({ taskId, onDone }: TaskLogPanelProps) {
 
         retryCount += 1
         const retryMs = Math.min(baseRetryMs * (2 ** (retryCount - 1)), maxRetryMs)
-        setError(`日志流连接中断，${retryMs / 1000}s 后重试（第 ${retryCount} 次）`)
+        setError(`Conexão do stream interrompida, tentando novamente em ${retryMs / 1000}s (tentativa ${retryCount})`)
         await sleep(retryMs)
       }
     }
@@ -264,19 +264,19 @@ export function TaskLogPanel({ taskId, onDone }: TaskLogPanelProps) {
 
   const footerText =
     terminalStatus === 'done'
-      ? { text: '注册完成', color: '#10b981' }
+      ? { text: 'Registro concluído', color: '#10b981' }
       : terminalStatus === 'stopped'
-        ? { text: '任务已停止', color: '#d97706' }
+        ? { text: 'Tarefa parada', color: '#d97706' }
         : terminalStatus === 'failed'
-          ? { text: '任务失败', color: '#dc2626' }
+          ? { text: 'Tarefa falhou', color: '#dc2626' }
           : null
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Space wrap style={{ marginBottom: 8 }}>
-        <Tag color="green">注册成功：{summary.success}</Tag>
-        <Tag color="blue">已注册：{summary.registered}</Tag>
-        <Tag color="default">总共注册：{summary.total}</Tag>
+        <Tag color="green">Registros bem-sucedidos: {summary.success}</Tag>
+        <Tag color="blue">Registrado: {summary.registered}</Tag>
+        <Tag color="default">Total registrado: {summary.total}</Tag>
       </Space>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -288,7 +288,7 @@ export function TaskLogPanel({ taskId, onDone }: TaskLogPanelProps) {
             loading={skipLoading}
             disabled={isFinished}
           >
-            跳过当前账号
+            Ignorar conta atual
           </Button>
           <Button
             size="small"
@@ -298,11 +298,11 @@ export function TaskLogPanel({ taskId, onDone }: TaskLogPanelProps) {
             loading={stopLoading}
             disabled={isFinished}
           >
-            停止任务
+            Parar tarefa
           </Button>
         </Space>
         <Button size="small" icon={<CopyOutlined />} onClick={handleCopyAll} disabled={lines.length === 0}>
-          复制日志
+          Copiar log
         </Button>
       </div>
 
@@ -328,7 +328,7 @@ export function TaskLogPanel({ taskId, onDone }: TaskLogPanelProps) {
           wordBreak: 'break-word',
         }}
       >
-        {lines.length === 0 && !error && <div style={{ color: '#9ca3af' }}>等待日志...</div>}
+        {lines.length === 0 && !error && <div style={{ color: '#9ca3af' }}>Aguardando log...</div>}
         {error && <div style={{ color: '#dc2626' }}>{error}</div>}
         {lines.map((line, index) => (
           <div
