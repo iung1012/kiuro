@@ -22,7 +22,7 @@ from core.browser_runtime import (
     resolve_browser_headless,
 )
 from urllib.request import Request, build_opener
-from core.proxy_utils import build_requests_proxy_config
+from core.proxy_utils import build_requests_proxy_config, build_playwright_proxy_config
 
 try:
     from curl_cffi import requests as cffi_requests
@@ -245,7 +245,9 @@ class KiroRegister:
             ],
         }
         if self.proxy:
-            launch_opts["proxy"] = {"server": self.proxy}
+            proxy_cfg = build_playwright_proxy_config(self.proxy)
+            if proxy_cfg:
+                launch_opts["proxy"] = proxy_cfg
 
         self.browser = self.pw.chromium.launch(**launch_opts)
         profile = self._build_random_profile()
