@@ -42,9 +42,7 @@ services:
     environment:
       PROXY_API_KEY: ${KIRO_GATEWAY_API_KEY:-changeme}
       KIRO_CREDS_FILE: /creds/credentials.json
-      HOST: 0.0.0.0
-      PORT: "8080"
     ports:
-      - "${KIRO_GATEWAY_PORT_BIND:-8080}:8080"
+      - "${KIRO_GATEWAY_PORT_BIND:-8080}:8000"
     volumes:
       - ${KIRO_GATEWAY_CREDS_BIND:-./kiro-gateway-creds}:/creds
