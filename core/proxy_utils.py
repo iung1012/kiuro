@@ -87,4 +87,5 @@ def build_playwright_proxy_config(proxy_url: Optional[str]) -> Optional[dict[str
         config["username"] = unquote(parts.username)
     if parts.password:
         config["password"] = unquote(parts.password)
+    config["bypass"] = "localhost,127.0.0.1"
     return config
