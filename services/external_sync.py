@@ -227,11 +227,17 @@ def sync_account(account) -> list[dict[str, Any]]:
 
     elif platform == "kiro":
         from platforms.kiro.account_manager_upload import resolve_manager_path, upload_to_kiro_manager
+        from platforms.kiro.kiro_gateway_upload import upload_to_kiro_gateway, resolve_creds_dir
 
         configured_path = str(config_store.get("kiro_manager_path", "") or "").strip()
         target_path = resolve_manager_path(configured_path or None)
         if configured_path or target_path.parent.exists() or target_path.exists():
             ok, msg = upload_to_kiro_manager(account, path=configured_path or None)
             results.append({"name": "Kiro Manager", "ok": ok, "msg": msg})
+
+        gw_creds_dir = str(config_store.get("kiro_gateway_creds_dir", "") or "").strip() or None
+        creds_dir = resolve_creds_dir(gw_creds_dir)
+        ok, msg = upload_to_kiro_gateway(account, creds_dir=gw_creds_dir)
+        results.append({"name": "kiro-gateway", "ok": ok, "msg": msg})
 
     return results
