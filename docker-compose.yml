@@ -43,6 +43,8 @@ services:
     environment:
       PROXY_API_KEY: ${KIRO_GATEWAY_API_KEY:-changeme}
       KIRO_CREDS_FILE: /creds/credentials.json
+      LOG_LEVEL: DEBUG
+      DEBUG_MODE: "true"
     ports:
       - "${KIRO_GATEWAY_PORT_BIND:-8080}:8000"
     volumes:
